@@ -1,7 +1,7 @@
-import express from 'express'
+import express, { response } from 'express'
 import cors from 'cors'
 import { pets } from './mongoConnect.js'
-import { request } from 'http'
+
 
 const app = express()
 app.use(express.json())
@@ -26,7 +26,14 @@ app.post('/addpets', async (request, response) => {
 })
 
 app.delete('/deletepets', async (request, response) => {
+  console.log('here is request.query', request.query)
   await pets.findOneAndDelete(request.body)
+  const allPets = await pets.find().toArray()
+  response.send(allPets)
+})
+
+app.put('/updatepets', async (request, response) => {
+  await pets.findOneAndUpdate(request.query, {$set: request.body})
   const allPets = await pets.find().toArray()
   response.send(allPets)
 })
